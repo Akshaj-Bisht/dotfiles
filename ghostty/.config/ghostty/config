@@ -1,0 +1,29 @@
+# ── Font & Theme ───────────────────────────────
+theme = "tokyonight"
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+bold-is-bright = true
+
+# ── Appearance ────────────────────────────────
+background-opacity = 0.7
+background-blur = true
+window-decoration = none
+
+cursor-style = "bar"
+cursor-style-blink = false
+
+# ── Padding ───────────────────────────────────
+window-padding-x = 6
+window-padding-y = 3
+
+# ── Keybind Overrides ─────────────────────────
+keybind = alt+1=unbind
+keybind = alt+2=unbind
+keybind = alt+3=unbind
+keybind = alt+4=unbind
+keybind = alt+5=unbind
+keybind = alt+6=unbind
+keybind = alt+7=unbind
+keybind = alt+8=unbind
+keybind = alt+9=unbind
+keybind = alt+0=unbind

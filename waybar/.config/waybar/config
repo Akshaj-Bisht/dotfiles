@@ -1,0 +1,182 @@
+{
+  "layer": "top",
+  "position": "bottom",
+  "reload_style_on_change": true,
+
+  "modules-left": [
+    "custom/notification",
+    "clock",
+    "tray"
+  ],
+
+  "modules-center": ["hyprland/workspaces"],
+
+  "modules-right": [
+    "group/expand",
+    "backlight",
+    "group/audio",
+    "bluetooth",
+    "network",
+    "battery"
+  ],
+
+  // NOTE: Workspace configuration
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "active": "",
+      "default": "",
+      "empty": ""
+    },
+    "persistent-workspaces": {
+      "*": [1, 2, 3, 4, 5]
+    }
+  },
+
+  "custom/notification": {
+      "tooltip": false,
+      "format": "",
+      "on-click": "swaync-client -t -sw",
+      "escape": true
+  },
+
+  // Clock
+  "clock": {
+    "format": " {:%I:%M %p}",
+    "interval": 1,
+    "tooltip-format": "<tt>{calendar}</tt>",
+    "calendar": {
+      "format": {
+        "today": "<span color='#fAfBfC'><b>{}</b></span>"
+      }
+    },
+    "actions": {
+      "on-click": "shift_up",
+      "on-click-right": "shift_down"
+    }
+  },
+
+  // Audio Group
+  "group/audio": {
+    "orientation": "horizontal",
+    "modules": [
+      "pulseaudio",
+      "custom/microphone"
+    ]
+  },
+
+"pulseaudio": {
+  "scroll-step": 5,
+  "format": "{icon} {volume}%",
+  "format-muted": "󰝟 {volume}%",
+  "format-icons": {
+    "default": ["󰕿", "󰖀", "󰕾"]
+  },
+  "on-click": "pamixer -t",
+  "on-click-right": "systemsettings kcm_pulseaudio"
+},
+
+
+"custom/microphone": {
+  "interval": 2,
+  "format": "{}",
+  "exec": "/home/aksh/.config/waybar/scripts/mic-status.sh",
+  "on-click": "/home/aksh/.config/waybar/scripts/mic-status.sh toggle",
+  "on-scroll-up": "/home/aksh/.config/waybar/scripts/mic-status.sh up",
+  "on-scroll-down": "/home/aksh/.config/waybar/scripts/mic-status.sh down",
+  "on-click-right": "systemsettings kcm_pulseaudio",
+  "tooltip": true
+},
+
+  // Backlight
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "{icon} {percent}%",
+    "format-icons": ["", "", ""],
+    "on-scroll-up": "brightnessctl set +5%",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "on-click": "brightnessctl set 100%"
+  },
+
+  // Bluetooth (KDE-managed)
+  "bluetooth": {
+    "format-on": "󰂯",
+    "format-off": "󰂲",
+    "format-disabled": "󰂲",
+    "format-connected-battery": "󰂯",
+    "tooltip": true,
+    "on-click": "bluetoothctl show | grep -q 'Powered: yes' && bluetoothctl power off || bluetoothctl power on",
+    "on-click-right": "systemsettings kcm_bluetooth"
+  },
+
+  // Network (KDE)
+  "network": {
+    "format-wifi": "",
+    "format-ethernet": "󰈀",
+    "format-disconnected": "󰖪",
+    "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+    "tooltip-format-ethernet": "{ifname} 🖧 ",
+    "tooltip-format-disconnected": "No connection",
+    "on-click": "systemsettings kcm_networkmanagement"
+  },
+
+  // Battery
+  "battery": {
+    "interval": 30,
+    "states": {
+      "good": 95,
+      "warning": 30,
+      "critical": 20
+    },
+    "format": "{capacity}% {icon}",
+    "format-charging": "{capacity}% 󰂄",
+    "format-plugged": "{capacity}% 󰂄",
+    "format-alt": "{time} {icon}",
+    "format-icons": [
+      "󰁺", "󰁼", "󰁾", "󰂀", "󰂂", "󰁹"
+    ],
+    "on-click": "systemsettings kcm_powerdevil"
+  },
+
+  // Expandable drawer (CPU/RAM/Temp)
+  "group/expand": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 600,
+      "transition-to-left": true,
+      "click-to-reveal": true
+    },
+    "modules": [
+      "custom/expand", "cpu", "memory", "temperature", "custom/endpoint"
+    ]
+  },
+
+  "custom/expand": {
+    "format": "", "tooltip": false
+  },
+
+  "cpu": {
+    "interval": 5,
+    "format": " {usage}%", "tooltip": true
+  },
+
+  "memory": {
+    "interval": 5,
+    "format": "󰍛 {percentage}%"
+  },
+
+  "temperature": {
+    "interval": 10,
+    "critical-threshold": 80,
+    "format": " {temperatureC}°C"
+  },
+
+  // Tray Icons
+  "tray": { "icon-size": 16, "spacing": 8 },
+
+  // Visual separator
+  "custom/endpoint": {
+    "format": "|",
+    "tooltip": false
+  }
+}
