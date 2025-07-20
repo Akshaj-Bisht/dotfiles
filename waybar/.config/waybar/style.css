@@ -15,7 +15,7 @@
 /* FONTS */
 * {
     font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", "Font Awesome 6 Free", monospace;
-    font-size: 12px; /* Try 12px or 13px for crisper text */
+    font-size: 14px; /* Try 12px or 13px for crisper text */
     color: @foreground;
 }
 

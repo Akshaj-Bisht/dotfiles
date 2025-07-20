@@ -2,8 +2,8 @@
   "$schema": "/etc/xdg/swaync/configSchema.json",
   "positionX": "left",
   "positionY": "bottom",
-  "layer": "overlay",
-  "control-center-layer": "bottom",
+  "layer": "top",
+  "control-center-layer": "top",
   "layer-shell": true,
   "css-priority": "config",
   "control-center-width": 350,
@@ -14,9 +14,9 @@
   "notification-2fa-action": true,
   "notification-inline-replies": true,
   "notification-window-width": 350,
-  "notification-icon-size": 60,
-  "notification-body-image-height": 180,
-  "notification-body-image-width": 180,
+  "notification-icon-size": 40,
+  "notification-body-image-height": 100,
+  "notification-body-image-width": 100,
   "timeout": 12,
   "timeout-low": 6,
   "timeout-critical": 1,
@@ -41,10 +41,6 @@
       "clear-all-button": true,
       "button-text": "󰆴"
     },
-    "label": {
-      "max-lines": 1,
-      "text": "Notification Center!"
-    },
     "mpris": {
       "image-size": 80,
       "image-radius": 0
@@ -63,42 +59,34 @@
           "type": "toggle"
         },
         {
-          "label": "󰍭",
+          "label": "󰍬",
           "command": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
           "type": "toggle"
         },
         {
           "label": "",
-          "command": "ghostty nmtui"
+          "command": "systemsettings kcm_networkmanagement"
         },
         {
           "label": "",
-          "command": "blueman-manager"
+          "command": "systemsettings kcm_bluetooth"
         },
         {
           "label": "󰤄",
-          "command": "swaync-client -d",
+          "command": "swaync-client -C",
           "type": "toggle"
         },
         {
-          "label": "󰀟",
-          "command": "gnome-network-displays"
-        },
-        {
-          "label": "󰈙",
-          "command": "ghostty bash -i -c 'Docs'"
-        },
-        {
           "label": "",
-          "command": "ghostty bash -i -c 'Settings'"
-        },
-        {
-          "label": "",
-          "command": "ghostty bash -i -c 'tasks'"
+          "command": "systemsettings"
         },
         {
           "label": "",
           "command": "hyprlock"
+        },
+        {
+          "label": "󰍃",
+          "command": "loginctl terminate-user $USER"
         },
         {
           "label": "",

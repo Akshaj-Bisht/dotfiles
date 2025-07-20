@@ -11,14 +11,14 @@
 
   "modules-center": ["hyprland/workspaces"],
 
-  "modules-right": [
-    "group/expand",
-    "backlight",
-    "group/audio",
-    "bluetooth",
-    "network",
-    "battery"
-  ],
+"modules-right": [
+  "group/expand",
+  "backlight",
+  "group/audio",
+  "bluetooth",
+  "network",
+  "battery",
+],
 
   // NOTE: Workspace configuration
   "hyprland/workspaces": {
@@ -33,12 +33,13 @@
     }
   },
 
-  "custom/notification": {
-      "tooltip": false,
-      "format": "",
-      "on-click": "swaync-client -t -sw",
-      "escape": true
-  },
+"custom/notification": {
+  "format": " ",
+  "exec": "swaync-client -n",
+  "interval": 2,
+  "on-click": "swaync-client -t -sw",
+  "tooltip": false
+},
 
   // Clock
   "clock": {
@@ -70,10 +71,16 @@
   "format": "{icon} {volume}%",
   "format-muted": "󰝟 {volume}%",
   "format-icons": {
+    "headphones": "󰋋",           // Headphone icon
+    "handsfree": "󰋋",
+    "headset": "󰋎",
+    "speaker":  "󰕿",            // Default speakers
     "default": ["󰕿", "󰖀", "󰕾"]
   },
   "on-click": "pamixer -t",
-  "on-click-right": "systemsettings kcm_pulseaudio"
+  "on-click-right": "systemsettings kcm_pulseaudio",
+  "tooltip": true,
+  "tooltip-format": "<b>{desc}</b>" // Shows device name in tooltip
 },
 
 

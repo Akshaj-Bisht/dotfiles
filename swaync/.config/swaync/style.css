@@ -1,170 +1,162 @@
-
-
-@define-color mpris-album-art-overlay alpha(@background, 0.55);
-@define-color mpris-button-hover alpha(@background, 0.50);
-@define-color text @color15;
+@define-color background rgba(30, 32, 48, 0.5);
+@define-color text #dbddf4;
+@define-color mycolor #89b4fa;
 @define-color bg alpha(@background, 0.5);
 @define-color bg-hover alpha(@background, 0.8);
-@define-color mycolor @color9;
-@define-color border-color alpha(@mycolor, 0.15);
 
-@keyframes fadeIn {
-    0% {
-        padding-left: 20px;
-        margin-left: 50px;
-        margin-right: 50px;
-    }
-    100% {
-        padding: 0px;
-        margin: 0px;
-    }
-}
-
-* { outline: none; }
-
-.notification {
-    background: alpha(@mycolor, 0.5);
-}
-
-.control-center .notification-row {
-    background-color: unset;
-}
-
-.control-center .notification-row .notification-background .notification {
-    margin-top: 0.15rem;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-    background: alpha(@mycolor, 0.3);
-}
-
-.floating-notifications .notification {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.control-center .notification-row .notification-background .notification,
-.control-center .notification-row .notification-background .notification .notification-content,
-.floating-notifications .notification-row .notification-background .notification .notification-content {
-    border-radius: 12px;
-}
-
-.notification widget:hover {
-    background: alpha(@mycolor, 0.2);
-}
-
-.floating-notifications .notification-content,
-.control-center .notification-content {
-    padding-top: 12px;
-    border-radius: 10px;
-}
-
-.control-center .notification-content label,
-.floating-notifications .notification-content label {
-    padding: 10px;
-}
-
-.notification.low .notification-content .body,
-.notification.normal .notification-content .body {
+* {
+    background-color: transparent;
     color: @text;
-    font-size: 0.9rem;
 }
 
-.notification.critical .notification-content {
-    background-color: #ffb4a9;
-    color: #680003;
+/* Notification Card Styling */
+.notification, .floating-notifications .notification {
+    background-color: rgba(30, 32, 48, 0.35);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 8px 10px;
+    margin: 6px 0;
+    min-height: 48px;
+    max-width: 100%;
+    font-size: 14px;
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
 }
 
+/* Notification content: summary, body, time */
 .notification-content {
-    padding: 5px;
+    padding: 0 6px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
 }
 
 .notification .summary {
-    font-family: 'JetBrainsMono Nerd Font';
-    font-size: 0.99rem;
-    font-weight: 500;
-}
-
-.notification .time {
-    font-size: 0.82rem;
-    font-weight: 500;
-    margin-right: 1rem;
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 1px;
 }
 
 .notification .body {
-    font-family: 'JetBrainsMono Nerd Font';
-    font-size: 0.88rem;
+    font-size: 0.94em;
     font-weight: 400;
-    margin-top: 0.31rem;
-}
-
-.close-button {
-    all: unset;
-    background-color: transparent;
-    color: @text;
-    min-height: 20px;
-    min-width: 20px;
-}
-
-.close-button:hover {
-    background-color: @bg-hover;
-    border-radius: 100%;
-}
-
-.control-center {
-    background: @bg;
-    color: @text;
-    border-radius: 10px;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.65);
-}
-
-.widget-title {
-    padding: 20px;
     color: @text;
 }
 
-.widget-title > button {
-    font-size: initial;
-    color: @text;
-    background: rgba(255, 85, 85, 0.3);
-    border-radius: 12px;
-    padding: 0px 10px;
-    margin: 3px 20px 0 0;
+.notification .time {
+    font-size: 0.8em;
+    color: alpha(@text, 0.6);
+    margin-top: 2px;
 }
 
-.widget-title > button:hover {
-    background: @bg-hover;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.65);
+/* Proper stacked vertical list */
+.notifications, .notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+    margin: 0;
+    overflow-y: auto;
+    max-height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: @mycolor transparent;
 }
 
-.widget-label > label {
-    font-size: 1.1rem;
+/* Scrollbar Styling */
+.notifications::-webkit-scrollbar {
+    width: 6px;
 }
-
-.widget-buttons-grid {
-    font-family: "JetBrainsMono Nerd Font";
-    padding: 8px;
-    margin: 10px;
-    border-radius: 12px;
+.notifications::-webkit-scrollbar-track {
     background: transparent;
+}
+.notifications::-webkit-scrollbar-thumb {
+    background-color: @mycolor;
+    border-radius: 6px;
+}
+
+/* Notification Icons */
+.notification .icon, .notification .image {
+    max-width: 48px !important;
+    max-height: 48px !important;
+    border-radius: 8px;
+    margin-right: 12px;
+    align-self: center;
+}
+
+.notification .body img {
+    max-width: 72px !important;
+    max-height: 72px !important;
+    border-radius: 8px;
+}
+
+/* Close Button */
+.close-button {
+    background: transparent;
+    color: @text;
+    min-width: 24px;
+    min-height: 24px;
+}
+.close-button:hover {
+    background: @bg-hover;
+    border-radius: 99px;
+}
+
+/* Clear All */
+.clear-all-button {
+    background: rgba(255, 100, 100, 0.12);
+    color: #e06c75;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 14px;
+}
+.clear-all-button:hover {
+    background: rgba(255, 100, 100, 0.25);
+    color: #ffffff;
+}
+
+/* Control Center Panel */
+.control-center {
+    background-color: rgba(30, 32, 48, 0.35);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(18px);
+}
+
+/* Buttons Grid */
+.widget-buttons-grid {
+    padding: 12px;
+    margin: 8px;
+    background: rgba(20, 20, 30, 0.3);
+    border-radius: 12px;
+    backdrop-filter: blur(14px);
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button {
-    background: transparent;
-    border-radius: 12px;
-    text-shadow: none;
-    box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.02);
-}
-
-.widget-buttons-grid > flowbox > flowboxchild > button:hover {
-    background: @color4;
-    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+    background: rgba(255,255,255, 0.05);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    justify-content: center;
+    align-items: center;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button label {
     font-size: 20px;
-    color: @color7;
+    color: @text;
+    text-align: center;
+    margin: auto;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button:hover {
+    background-color: alpha(@mycolor, 0.3);
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:hover label {
-    color: @text;
+    color: #ffffff;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button.toggle:checked {
@@ -172,23 +164,38 @@
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button.toggle:checked label {
-    color: @background;
+    color: #1e1e2e;
 }
 
-.widget-volume, .widget-backlight {
-    background-color: transparent;
-    padding: 8px;
-    margin: 8px;
-    border-radius: 12px;
-}
-
+/* Sliders */
 trough {
-    border-radius: 20px;
-    background: transparent;
+    background-color: alpha(@text, 0.05);
+    border-radius: 10px;
+    min-height: 6px;
+}
+trough highlight {
+    background-color: @mycolor;
+    border-radius: 10px;
+    min-height: 6px;
+}
+trough slider {
+    background-color: #ffffff;
+    border-radius: 100%;
+    min-width: 12px;
+    min-height: 12px;
+    margin: 0px;
+}
+.widget-volume,
+.widget-backlight {
+    background-color: transparent;
+    padding: 10px;
 }
 
-trough highlight {
-    background: @mycolor;
-    border-radius: 20px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+/* MPRIS */
+.widget-mpris .widget-mpris-player {
+    background-color: alpha(@background, 0.4);
+    padding: 16px;
+    margin: 10px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
 }
