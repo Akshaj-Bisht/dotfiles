@@ -62,7 +62,7 @@
           "type": "toggle"
         },
         {
-          "label": "󰍬",
+          "label": "󰍭",
           "command": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
           "type": "toggle"
         },
