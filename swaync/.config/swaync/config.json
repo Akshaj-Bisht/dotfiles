@@ -76,7 +76,7 @@
         },
         {
           "label": "󰤄",
-          "command": "swaync-client -C",
+          "command": "swaync-client -d",
           "type": "toggle"
         },
         {
