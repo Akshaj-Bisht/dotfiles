@@ -89,7 +89,7 @@
         },
         {
           "label": "󰍃",
-          "command": "loginctl terminate-user $USER"
+          "command": "exit"
         },
         {
           "label": "",
