@@ -7,6 +7,7 @@
   "layer-shell": true,
   "css-priority": "config",
   "control-center-width": 350,
+  "control-center-height": 700,
   "control-center-margin-top": 8,
   "control-center-margin-bottom": 8,
   "control-center-margin-right": 0,
@@ -17,10 +18,11 @@
   "notification-icon-size": 40,
   "notification-body-image-height": 100,
   "notification-body-image-width": 100,
+  "notification-grouping": true,
   "timeout": 12,
   "timeout-low": 6,
   "timeout-critical": 1,
-  "fit-to-screen": true,
+  "fit-to-screen": false,
   "keyboard-shortcuts": true,
   "image-visibility": "always",
   "transition-time": 200,
@@ -28,25 +30,26 @@
   "hide-on-action": true,
   "script-fail-notify": true,
   "widgets": [
-    "mpris",
     "title",
     "notifications",
+    "mpris",
     "volume",
     "backlight",
     "buttons-grid"
   ],
   "widget-config": {
     "title": {
-      "text": "Notification Center",
+      "text": "Notification",
       "clear-all-button": true,
       "button-text": "󰆴"
     },
     "mpris": {
-      "image-size": 80,
+      "image-size": 50,
       "image-radius": 0
     },
     "volume": {
-      "label": "󰕾 "
+      "label": "󰕾 ",
+      "show-per-app": false
     },
     "backlight": {
       "label": "󰃟 "
@@ -64,7 +67,7 @@
           "type": "toggle"
         },
         {
-          "label": "",
+          "label": " ",
           "command": "systemsettings kcm_networkmanagement"
         },
         {
