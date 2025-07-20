@@ -72,7 +72,7 @@
         },
         {
           "label": "",
-          "command": "systemsettings kcm_bluetooth"
+          "command": "bluedevil-wizard"
         },
         {
           "label": "󰤄",
