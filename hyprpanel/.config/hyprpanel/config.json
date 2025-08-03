@@ -84,5 +84,6 @@
   "bar.workspaces.show_icons": false,
   "bar.workspaces.show_numbered": true,
   "bar.workspaces.numbered_active_indicator": "highlight",
-  "theme.bar.menus.monochrome": true
+  "theme.bar.menus.monochrome": true,
+  "menus.transition": "none"
 }
