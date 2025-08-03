@@ -1,0 +1,88 @@
+{
+  "bar.customModules.storage.paths": [
+    "/"
+  ],
+  "theme.font.size": "1.0rem",
+  "theme.font.weight": 600,
+  "theme.bar.floating": true,
+  "theme.bar.location": "bottom",
+  "bar.autoHide": "fullscreen",
+  "theme.bar.enableShadow": false,
+  "menus.volume.raiseMaximumVolume": true,
+  "menus.power.showLabel": true,
+  "bar.customModules.worldclock.format": "%I:%M:%S %p %Z",
+  "theme.bar.buttons.modules.power.enableBorder": true,
+  "terminal": "ghostty",
+  "tear": true,
+  "theme.bar.menus.enableShadow": true,
+  "bar.clock.format": "%a %b %d  %I:%M %p",
+  "bar.layouts": {
+    "0": {
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "right": [
+        "volume",
+        "network",
+        "bluetooth",
+        "battery",
+        "systray",
+        "clock",
+        "notifications"
+      ]
+    },
+    "1": {
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "clock",
+        "notifications"
+      ]
+    },
+    "2": {
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "clock",
+        "notifications"
+      ]
+    }
+  },
+  "menus.dashboard.directories.enabled": false,
+  "menus.dashboard.shortcuts.enabled": false,
+  "theme.osd.orientation": "horizontal",
+  "theme.osd.location": "bottom",
+  "theme.osd.muted_zero": false,
+  "theme.osd.enableShadow": true,
+  "theme.font.name": "JetBrainsMono Nerd Font Propo",
+  "theme.font.label": "JetBrainsMono Nerd Font Propo",
+  "menus.clock.time.military": true,
+  "menus.clock.time.hideSeconds": true,
+  "menus.clock.weather.enabled": false,
+  "notifications.showActionsOnHover": true,
+  "notifications.position": "right",
+  "theme.notification.enableShadow": false,
+  "menus.power.lowBatteryNotification": true,
+  "bar.battery.hideLabelWhenFull": true,
+  "theme.bar.buttons.enableBorders": false,
+  "bar.workspaces.show_icons": false,
+  "bar.workspaces.show_numbered": true,
+  "bar.workspaces.numbered_active_indicator": "highlight",
+  "theme.bar.menus.monochrome": true
+}
