@@ -1,0 +1,12 @@
+# History files
+.zsh_history
+.bash_history
+
+# Cache directories
+.cache/
+# Antidote cache and generated files
+.cache/antidote/
+.config/zsh/.zsh_plugins.zsh
+
+# Plugin manager install
+.config/zsh/plugins/

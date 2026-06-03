@@ -1,0 +1,8 @@
+# Core plugins
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-history-substring-search
+jeffreytse/zsh-vi-mode
+zdharma-continuum/fast-syntax-highlighting
+
+# Better fzf completion
+Aloxaf/fzf-tab

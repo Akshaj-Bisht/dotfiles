@@ -1,0 +1,45 @@
+# ===== KITTY CONFIG =====
+
+
+include ~/.config/kitty/themes/noctalia.conf
+
+font_family JetBrainsMono Nerd Font Mono
+bold_font auto
+italic_font auto
+
+font_size 14
+
+font_features +zero +liga +ss01 +ss02 +ss03 +ss04 +ss05 +ss06 +ss07 +ss08
+
+disable_ligatures never
+
+# Cursor
+cursor_shape beam
+cursor_blink_interval 0.5
+
+# Window
+window_padding_width 8
+hide_window_decorations yes
+
+# Transparency
+background_opacity 0.8
+active_background_opacity 0.92
+inactive_background_opacity 0.92
+
+# Performance
+enable_audio_bell no
+repaint_delay 10
+input_delay 3
+sync_to_monitor yes
+
+# Clipboard
+copy_on_select yes
+
+# Scrollback
+scrollback_lines 10000
+
+# Theme import
+
+# BEGIN_KITTY_THEME
+# Noctalia
+# END_KITTY_THEME
