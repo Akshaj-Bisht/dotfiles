@@ -16,6 +16,36 @@ This repository contains optimized configuration files for zsh, Neovim, and othe
 
 ## 🚀 Quick Start
 
+### Automated Setup (Recommended for New Machines)
+
+**One-liner installation** - installs everything and sets up dotfiles:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Akshaj-Bisht/dotfiles/main/install.sh | bash
+```
+
+Or if you prefer to run it locally:
+
+```bash
+git clone --bare https://github.com/Akshaj-Bisht/dotfiles.git ~/.dotfiles
+bash ~/.dotfiles/hooks/install.sh
+```
+
+The script will:
+- ✅ Detect your OS (Arch, Ubuntu, macOS)
+- ✅ Install 40+ essential packages
+- ✅ Install development tools (Python, Rust, Go, Node.js, etc.)
+- ✅ Clone and checkout all dotfiles
+- ✅ Configure zsh as default shell
+- ✅ Set up Neovim, terminal emulators, and tools
+- ✅ Handle conflicts gracefully
+
+**Time:** ~10-15 minutes depending on internet speed
+
+---
+
+### Manual Setup (If You Prefer)
+
 If you already have git installed, you can set up these dotfiles in minutes:
 
 ```bash
@@ -36,12 +66,43 @@ dotfiles config status.showUntrackedFiles no
 
 ## 📥 Installation
 
-### Prerequisites
+### Automated Installation Script
 
-- **Linux system** (tested on Arch Linux)
+The easiest way to set up everything is using the provided `install.sh` script:
+
+```bash
+# Download and run (one-liner)
+curl -fsSL https://raw.githubusercontent.com/Akshaj-Bisht/dotfiles/main/install.sh | bash
+
+# Or download and run manually
+git clone --bare https://github.com/Akshaj-Bisht/dotfiles.git ~/.dotfiles
+bash ~/.dotfiles/hooks/install.sh
+```
+
+**What the script does:**
+1. Detects your OS (Arch Linux, Ubuntu/Debian, macOS)
+2. Updates system packages
+3. Installs 40+ essential packages and tools
+4. Sets up the dotfiles bare repository
+5. Checks out all configuration files
+6. Configures zsh as default shell
+7. Sets up development environments
+
+**Supported Systems:**
+- Arch Linux and Arch-based distros (Manjaro, CachyOS, etc.)
+- Ubuntu/Debian and derivatives
+- macOS (with Homebrew)
+
+### Prerequisites (if not using automated script)
+
+- **Linux system** or **macOS**
 - **Git** (for cloning and managing dotfiles)
 - **zsh** (v5.9+)
 - **Neovim** (v0.12.2+)
+
+### Manual Step-by-Step Installation
+
+If you prefer to install manually or the script doesn't work for your system:
 
 ### Step 1: Clone the Repository
 
@@ -239,6 +300,10 @@ dotfiles push
 
 ## 📂 Included Configs
 
+### Root Level Files
+- `install.sh` - Automated installation script (see [Quick Start](#quick-start))
+- `README.md` - This documentation
+
 ### Zsh (`~/.config/zsh/`)
 - `.zshrc` - Main zsh configuration
 - `.zshenv` - Environment variables (XDG_CONFIG_HOME, ZDOTDIR)
@@ -274,6 +339,16 @@ dotfiles push
 - `lua/plugins/oil.lua` - File explorer
 - `lua/plugins/projects.lua` - Project management
 - `lua/plugins/terminal.lua` - Terminal integration
+
+### Terminal Emulators
+
+**Foot (`~/.config/foot/`)**
+- `foot.ini` - Configuration with noctalia theme, JetBrainsMono font
+- 0.8 opacity, 8x8 padding, beam cursor, 10k scrollback lines
+
+**Alacritty (`~/.config/alacritty/`)**
+- `alacritty.toml` - Configuration with noctalia theme, JetBrainsMono font
+- Matching opacity, padding, and beam cursor style
 
 **Optimizations:**
 - ✅ Lazy-loaded plugins (load only when needed)
