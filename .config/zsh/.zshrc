@@ -31,7 +31,11 @@ eval "$(zoxide init zsh)"
 # =========================================================
 
 autoload -Uz compinit
-compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
+if [[ -n ${ZDOTDIR}/.zcompdump(#qNmh+24) ]]; then
+    compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
+else
+    compinit -C -d "$XDG_CACHE_HOME/zsh/zcompdump"
+fi
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'

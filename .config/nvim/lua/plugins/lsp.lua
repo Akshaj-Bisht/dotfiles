@@ -109,6 +109,7 @@ local capabilities = blink_ok and blink.get_lsp_capabilities() or vim.lsp.protoc
 vim.lsp.config('*', {
   capabilities = capabilities,
   on_attach = on_attach,
+  cmd_env = { NVIM_LOG_FILE = '' },  -- Disable LSP logging for performance
 })
 
 vim.lsp.config('pyright', {

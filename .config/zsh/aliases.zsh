@@ -13,8 +13,6 @@ alias tree='eza --tree --icons'
 # Reuse ls completions for eza (avoids defining a separate completion function)
 compdef eza=ls
 
-# Better cat
-alias cat='bat'
 
 # =========================================================
 # Core utilities
@@ -46,3 +44,6 @@ alias gadog='PAGER="less -F -X" git log --all --decorate --oneline --graph'
 # dotfiles
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME'
+#sudo
+export SUDO_EDITOR="nvim"
+alias "sudoedit"='function _sudoedit(){sudo -e "$1";};_sudoedit'

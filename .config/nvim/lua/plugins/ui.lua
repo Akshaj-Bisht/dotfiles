@@ -14,31 +14,34 @@ if tokyo_ok then
 end
 vim.cmd('colorscheme tokyonight')
 
--- Alpha-nvim startup screen
+-- Alpha-nvim startup screen (lazy-load: only on VimEnter with no args)
 local alpha_ok, alpha = pcall(require, 'alpha')
-if alpha_ok then
+if alpha_ok and vim.fn.argc() == 0 then
   local startify = require('alpha.themes.startify')
   startify.file_icons.provider = 'devicons'
   alpha.setup(startify.config)
 end
 
--- Bufferline
-local bufferline_ok, bufferline = pcall(require, 'bufferline')
-if bufferline_ok then
-  bufferline.setup {
-    options = {
-      mode = 'buffers',
-      diagnostics = 'nvim_lsp',
-      offsets = { { filetype = 'snacks_layout_box', text = 'Explorer' } },
-      separator_style = 'slant',
-      always_show_bufferline = true,
-      enforce_regular_tabs = true,
-    },
-    highlights = {
-      buffer_selected = { bold = true, italic = false },
-      indicator_selected = { bold = true },
-    },
-  }
+-- Bufferline (skip if opening file/directory)
+local should_setup_bufferline = vim.fn.argc() == 0
+if should_setup_bufferline then
+  local bufferline_ok, bufferline = pcall(require, 'bufferline')
+  if bufferline_ok then
+    bufferline.setup {
+      options = {
+        mode = 'buffers',
+        diagnostics = 'nvim_lsp',
+        offsets = { { filetype = 'snacks_layout_box', text = 'Explorer' } },
+        separator_style = 'slant',
+        always_show_bufferline = true,
+        enforce_regular_tabs = true,
+      },
+      highlights = {
+        buffer_selected = { bold = true, italic = false },
+        indicator_selected = { bold = true },
+      },
+    }
+  end
 end
 
 -- Disable tabline in alpha

@@ -6,6 +6,9 @@ local ignored_filetypes = {
 
 local group = vim.api.nvim_create_augroup('treesitter', { clear = true })
 
+-- Enable incremental parsing for faster syntax highlighting updates
+vim.treesitter.query.set_max_mem(2097152)
+
 vim.api.nvim_create_autocmd('FileType', {
   group = group,
   callback = function(args)
