@@ -1,0 +1,27 @@
+[general]
+import = ["~/.config/alacritty/themes/noctalia.toml"]
+
+[window]
+opacity = 0.8
+padding = { x = 8, y = 8 }
+decorations = "None"
+
+[font]
+size = 14
+normal = { family = "JetBrainsMono Nerd Font Mono", style = "Bold" }
+bold = { family = "JetBrainsMono Nerd Font Mono", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font Mono", style = "Bold Italic" }
+bold_italic = { family = "JetBrainsMono Nerd Font Mono", style = "Bold Italic" }
+
+[cursor]
+style = "Beam"
+blink_interval = 500
+
+[bell]
+duration = 0
+
+[selection]
+save_to_clipboard = true
+
+[terminal]
+shell = "none"
