@@ -98,6 +98,20 @@ load('plugins.ui')
 load('plugins.whichkey')
 load('plugins.terminal')
 
+-- Load Comment immediately to ensure it's available for all filetypes
+pcall(function()
+  require('Comment').setup({
+    toggler = {
+      line = 'gcc',
+      block = 'gbc',
+    },
+    opleader = {
+      line = 'gc',
+      block = 'gb',
+    },
+  })
+end)
+
 local function startup_directory_arg()
   if vim.fn.argc() == 0 then return nil end
   local arg = vim.fn.argv(0)

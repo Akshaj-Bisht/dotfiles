@@ -3,18 +3,6 @@ local oil = require('plugins.oil')
 pcall(function() require('trouble').setup({}) end)
 pcall(function() require('todo-comments').setup({}) end)
 pcall(function() require('nvim-autopairs').setup({}) end)
-pcall(function()
-  require('Comment').setup({
-    toggler = {
-      line = 'gcc',
-      block = 'gbc',
-    },
-    opleader = {
-      line = 'gc',
-      block = 'gb',
-    },
-  })
-end)
 pcall(function() require('flash').setup({}) end)
 pcall(function()
   require('render-markdown').setup({ html = { enabled = false }, latex = { enabled = false } })
