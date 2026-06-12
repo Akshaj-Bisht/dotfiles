@@ -65,6 +65,10 @@ vim.keymap.set('n', '<leader>h', ':nohlsearch<cr>', { desc = 'Clear search highl
 -- Quick escape from insert mode
 vim.keymap.set('i', 'jk', '<Esc>', { desc = 'Exit insert mode' })
 
+-- Yank to system clipboard (explicit mappings to ensure clipboard works)
+vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Yank to system clipboard' })
+vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Yank to system clipboard' })
+
 -- Terminal keymaps for toggleterm are in plugins/terminal.lua
 
 -- Buffer navigation

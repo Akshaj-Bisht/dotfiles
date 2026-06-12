@@ -9,7 +9,12 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Sync vim and system clipboards
-vim.o.clipboard = 'unnamedplus'
+-- Check if in SSH: if so, use a different provider
+if os.getenv('SSH_CONNECTION') then
+  vim.o.clipboard = ''  -- Will try to auto-detect
+else
+  vim.o.clipboard = 'unnamedplus'  -- Use system clipboard
+end
 
 -- Raise dialog if you close unsaved buffer (prevent mistakes)
 vim.o.confirm = true
@@ -17,8 +22,9 @@ vim.o.confirm = true
 -- Disable swap files to prevent annoying errors
 vim.opt.swapfile = false
 
--- Snappy escape
-vim.o.ttimeoutlen = 1
+-- Snappy escape (timeoutlen for terminal keycodes, increased from 1 for jk sequences)
+vim.o.ttimeoutlen = 100
+vim.o.timeoutlen = 500  -- Timeout for mappings (e.g., jk sequence in insert/terminal mode)
 
 -- Sign column for LSP warnings
 vim.o.signcolumn = 'yes'

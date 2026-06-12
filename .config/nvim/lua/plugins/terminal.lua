@@ -17,7 +17,8 @@ vim.api.nvim_create_autocmd('TermOpen', {
   callback = function(event)
     local opts = { buffer = event.buf }
     vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', vim.tbl_extend('force', opts, { desc = 'Exit terminal mode' }))
-    vim.keymap.set('t', 'jk', '<C-\\><C-n>', vim.tbl_extend('force', opts, { desc = 'Exit terminal mode' }))
+    -- jk closes the floating terminal
+    vim.keymap.set('t', 'jk', '<C-\\><C-n><cmd>close<cr>', vim.tbl_extend('force', opts, { desc = 'Exit and close terminal' }))
     vim.keymap.set('t', '<C-h>', '<C-\\><C-n><C-w>h', vim.tbl_extend('force', opts, { desc = 'Focus left window' }))
     vim.keymap.set('t', '<C-j>', '<C-\\><C-n><C-w>j', vim.tbl_extend('force', opts, { desc = 'Focus lower window' }))
     vim.keymap.set('t', '<C-k>', '<C-\\><C-n><C-w>k', vim.tbl_extend('force', opts, { desc = 'Focus upper window' }))
