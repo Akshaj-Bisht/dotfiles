@@ -1,51 +1,204 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ################################################################################
 # Dotfiles Installation Script
-# 
-# This script automates the setup of a new system with all required packages,
-# terminal configurations, and development tools.
 #
-# Usage: bash install.sh
-# or: curl https://raw.githubusercontent.com/Akshaj-Bisht/dotfiles/main/install.sh | bash
+# Usage:
+#   bash install.sh
+#   bash install.sh --all
+#   bash install.sh --select
+#   bash install.sh --components zsh,doom,kitty,foot,mango
+#   bash install.sh --list
 ################################################################################
 
-set -e  # Exit on error
+set -euo pipefail
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Logging functions
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+DOTFILES_REPO="${DOTFILES_REPO:-git@github.com:Akshaj-Bisht/dotfiles.git}"
+DOTFILES_BRANCH="${DOTFILES_BRANCH:-main}"
+
+INSTALL_PACKAGES=1
+INTERACTIVE=1
+SELECTED_COMPONENTS=()
+
+COMPONENTS=(
+    "zsh"
+    "nvim"
+    "doom"
+    "kitty"
+    "foot"
+    "niri"
+    "mango"
+    "dev"
+)
+
 log_info() {
-    echo -e "${BLUE}ℹ${NC} $1"
+    echo -e "${BLUE}i${NC} $1"
 }
 
 log_success() {
-    echo -e "${GREEN}✓${NC} $1"
+    echo -e "${GREEN}+${NC} $1"
 }
 
 log_warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
+    echo -e "${YELLOW}!${NC} $1"
 }
 
 log_error() {
-    echo -e "${RED}✗${NC} $1"
+    echo -e "${RED}x${NC} $1"
 }
 
-################################################################################
-# System Detection
-################################################################################
+usage() {
+    cat <<EOF
+Usage: bash install.sh [options]
+
+Options:
+  --all                         Install every component
+  --select                      Prompt for components
+  --components LIST             Install comma-separated components
+                                Example: --components zsh,doom,kitty,foot
+  --no-packages                 Only checkout/configure dotfiles, skip packages
+  --list                        Show available components
+  -h, --help                    Show this help
+
+Components:
+  zsh      Zsh config and shell helpers
+  nvim     Neovim config
+  doom     Doom Emacs user config
+  kitty    Kitty terminal config
+  foot     Foot terminal config
+  niri     Niri config
+  mango    MangoWM config, if present
+  dev      Development tools and language runtimes
+EOF
+}
+
+list_components() {
+    printf '%s\n' "${COMPONENTS[@]}"
+}
+
+contains_component() {
+    local wanted="$1"
+    local component
+
+    for component in "${SELECTED_COMPONENTS[@]}"; do
+        [[ "$component" == "$wanted" ]] && return 0
+    done
+
+    return 1
+}
+
+valid_component() {
+    local wanted="$1"
+    local component
+
+    for component in "${COMPONENTS[@]}"; do
+        [[ "$component" == "$wanted" ]] && return 0
+    done
+
+    return 1
+}
+
+select_all_components() {
+    SELECTED_COMPONENTS=("${COMPONENTS[@]}")
+}
+
+parse_component_list() {
+    local raw="$1"
+    local item
+
+    SELECTED_COMPONENTS=()
+    raw="${raw// /}"
+    IFS=',' read -ra SELECTED_COMPONENTS <<< "$raw"
+
+    for item in "${SELECTED_COMPONENTS[@]}"; do
+        if [[ -z "$item" ]]; then
+            log_error "Empty component in list: $raw"
+            exit 1
+        fi
+
+        if ! valid_component "$item"; then
+            log_error "Unknown component: $item"
+            echo ""
+            usage
+            exit 1
+        fi
+    done
+}
+
+prompt_for_components() {
+    local default="zsh,doom,kitty,foot,niri,mango"
+    local input
+
+    echo "Available components:"
+    list_components | sed 's/^/  - /'
+    echo ""
+    read -r -p "Install components [all/$default]: " input
+
+    input="${input:-$default}"
+    if [[ "$input" == "all" ]]; then
+        select_all_components
+    else
+        parse_component_list "$input"
+    fi
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --all)
+                INTERACTIVE=0
+                select_all_components
+                shift
+                ;;
+            --select)
+                INTERACTIVE=1
+                shift
+                ;;
+            --components)
+                if [[ $# -lt 2 ]]; then
+                    log_error "--components requires a comma-separated list"
+                    exit 1
+                fi
+                INTERACTIVE=0
+                parse_component_list "$2"
+                shift 2
+                ;;
+            --no-packages)
+                INSTALL_PACKAGES=0
+                shift
+                ;;
+            --list)
+                list_components
+                exit 0
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                echo ""
+                usage
+                exit 1
+                ;;
+        esac
+    done
+}
 
 detect_os() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        if [ -f /etc/os-release ]; then
+    if [[ "${OSTYPE:-}" == "linux-gnu"* ]]; then
+        if [[ -f /etc/os-release ]]; then
+            # shellcheck disable=SC1091
             . /etc/os-release
-            if [[ "$ID" == "arch" || "$ID_LIKE" == *"arch"* ]]; then
+            if [[ "${ID:-}" == "arch" || "${ID_LIKE:-}" == *"arch"* ]]; then
                 echo "arch"
-            elif [[ "$ID" == "ubuntu" || "$ID" == "debian" || "$ID_LIKE" == *"debian"* ]]; then
+            elif [[ "${ID:-}" == "ubuntu" || "${ID:-}" == "debian" || "${ID_LIKE:-}" == *"debian"* ]]; then
                 echo "ubuntu"
             else
                 echo "unknown"
@@ -53,446 +206,397 @@ detect_os() {
         else
             echo "unknown"
         fi
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
+    elif [[ "${OSTYPE:-}" == "darwin"* ]]; then
         echo "macos"
     else
         echo "unknown"
     fi
 }
 
-################################################################################
-# Package Installation Functions
-################################################################################
+dedupe_packages() {
+    local seen=""
+    local pkg
+
+    for pkg in "$@"; do
+        [[ " $seen " == *" $pkg "* ]] && continue
+        seen="$seen $pkg"
+        printf '%s\n' "$pkg"
+    done
+}
+
+packages_for_arch() {
+    local packages=(git curl wget)
+
+    contains_component zsh && packages+=(zsh fzf zoxide eza)
+    contains_component nvim && packages+=(neovim ripgrep tree-sitter gcc stylua shfmt prettier)
+    contains_component doom && packages+=(emacs ripgrep fd)
+    contains_component kitty && packages+=(kitty)
+    contains_component foot && packages+=(foot)
+    contains_component niri && packages+=(niri)
+    contains_component dev && packages+=(base-devel gcc python rustup go nodejs npm)
+
+    dedupe_packages "${packages[@]}"
+}
+
+packages_for_ubuntu() {
+    local packages=(git curl wget)
+
+    contains_component zsh && packages+=(zsh fzf ripgrep)
+    contains_component nvim && packages+=(neovim ripgrep tree-sitter-cli gcc npm)
+    contains_component doom && packages+=(emacs ripgrep fd-find)
+    contains_component kitty && packages+=(kitty)
+    contains_component foot && packages+=(foot)
+    contains_component dev && packages+=(build-essential gcc python3 python3-pip golang-go nodejs npm)
+
+    dedupe_packages "${packages[@]}"
+}
+
+packages_for_macos() {
+    local packages=(git curl wget)
+
+    contains_component zsh && packages+=(zsh fzf zoxide eza)
+    contains_component nvim && packages+=(neovim ripgrep tree-sitter stylua shfmt prettier)
+    contains_component doom && packages+=(emacs ripgrep fd)
+    contains_component kitty && packages+=(kitty)
+    contains_component dev && packages+=(python rust go node npm)
+
+    dedupe_packages "${packages[@]}"
+}
 
 install_packages_arch() {
-    log_info "Installing packages for Arch Linux..."
-    
-    local packages=(
-        # Core utilities
-        "git"
-        "curl"
-        "wget"
-        "base-devel"
-        
-        # Shell
-        "zsh"
-        
-        # Editors
-        "neovim"
-        "nano"
-        
-        # Terminal emulators
-        "foot"
-        "alacritty"
-        
-        # Tools
-        "fzf"
-        "zoxide"
-        "ripgrep"
-        "eza"
-        "tree-sitter"
-        "gcc"
-        
-        # Development
-        "python"
-        "rustup"
-        "go"
-        "nodejs"
-        "npm"
-        
-        # Formatters
-        "prettier"
-        "stylua"
-        "shfmt"
-        
-        # LSP servers (optional - Mason will install these)
-        # "python-lsp-server"
-    )
-    
-    # Update system
-    log_info "Updating system packages..."
-    sudo pacman -Syu --noconfirm > /dev/null 2>&1
-    
-    # Install packages
+    local packages=("$@")
+    local pkg
+
+    [[ "${#packages[@]}" -eq 0 ]] && return
+
+    log_info "Updating Arch package database..."
+    sudo pacman -Syu --noconfirm
+
     for pkg in "${packages[@]}"; do
-        if ! pacman -Q "$pkg" > /dev/null 2>&1; then
-            log_info "Installing $pkg..."
-            sudo pacman -S "$pkg" --noconfirm > /dev/null 2>&1 && \
-                log_success "Installed $pkg" || \
-                log_warning "Failed to install $pkg (may already exist)"
-        else
+        if pacman -Q "$pkg" >/dev/null 2>&1; then
             log_success "$pkg already installed"
+            continue
         fi
+
+        log_info "Installing $pkg..."
+        sudo pacman -S "$pkg" --noconfirm && log_success "Installed $pkg" || log_warning "Failed to install $pkg"
     done
 }
 
 install_packages_ubuntu() {
-    log_info "Installing packages for Ubuntu/Debian..."
-    
-    local packages=(
-        # Core utilities
-        "git"
-        "curl"
-        "wget"
-        "build-essential"
-        
-        # Shell
-        "zsh"
-        
-        # Editors
-        "neovim"
-        "nano"
-        
-        # Terminal emulators
-        "foot"
-        "alacritty"
-        
-        # Tools
-        "fzf"
-        "ripgrep"
-        "tree-sitter-cli"
-        "gcc"
-        "npm"
-        
-        # Development
-        "python3"
-        "python3-pip"
-        "golang-go"
-        "nodejs"
-    )
-    
-    # Update system
-    log_info "Updating system packages..."
-    sudo apt-get update > /dev/null 2>&1
-    sudo apt-get upgrade -y > /dev/null 2>&1
-    
-    # Install packages
+    local packages=("$@")
+    local pkg
+
+    [[ "${#packages[@]}" -eq 0 ]] && return
+
+    log_info "Updating apt package database..."
+    sudo apt-get update
+
     for pkg in "${packages[@]}"; do
-        if ! dpkg -l | grep -q "^ii.*$pkg"; then
-            log_info "Installing $pkg..."
-            sudo apt-get install -y "$pkg" > /dev/null 2>&1 && \
-                log_success "Installed $pkg" || \
-                log_warning "Failed to install $pkg (may already exist)"
-        else
+        if dpkg -s "$pkg" >/dev/null 2>&1; then
             log_success "$pkg already installed"
+            continue
         fi
+
+        log_info "Installing $pkg..."
+        sudo apt-get install -y "$pkg" && log_success "Installed $pkg" || log_warning "Failed to install $pkg"
     done
-    
-    # Install eza if not present
-    if ! command -v eza &> /dev/null; then
-        log_info "Installing eza..."
-        cargo install eza 2>/dev/null || log_warning "Failed to install eza"
-    fi
 }
 
 install_packages_macos() {
-    log_info "Installing packages for macOS..."
-    
-    # Check if Homebrew is installed
-    if ! command -v brew &> /dev/null; then
+    local packages=("$@")
+    local pkg
+
+    [[ "${#packages[@]}" -eq 0 ]] && return
+
+    if ! command -v brew >/dev/null 2>&1; then
         log_info "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
-    
-    local packages=(
-        "git"
-        "zsh"
-        "neovim"
-        "fzf"
-        "zoxide"
-        "ripgrep"
-        "eza"
-        "tree-sitter"
-        "foot"
-        "alacritty"
-        "python"
-        "rust"
-        "go"
-        "node"
-        "prettier"
-    )
-    
+
     for pkg in "${packages[@]}"; do
-        if ! brew list "$pkg" > /dev/null 2>&1; then
-            log_info "Installing $pkg..."
-            brew install "$pkg" > /dev/null 2>&1 && \
-                log_success "Installed $pkg" || \
-                log_warning "Failed to install $pkg"
-        else
+        if brew list "$pkg" >/dev/null 2>&1; then
             log_success "$pkg already installed"
+            continue
         fi
+
+        log_info "Installing $pkg..."
+        brew install "$pkg" && log_success "Installed $pkg" || log_warning "Failed to install $pkg"
     done
 }
 
-################################################################################
-# Dotfiles Setup
-################################################################################
+install_selected_packages() {
+    local os="$1"
+    local packages=()
 
-setup_dotfiles() {
-    log_info "Setting up dotfiles..."
-    
-    local dotfiles_dir="$HOME/.dotfiles"
-    local github_repo="https://github.com/Akshaj-Bisht/dotfiles.git"
-    
-    # Check if dotfiles already exist
-    if [ -d "$dotfiles_dir" ]; then
-        log_warning "Dotfiles already exist at $dotfiles_dir"
-        log_info "Pulling latest changes..."
-        /usr/bin/git --git-dir="$dotfiles_dir" --work-tree="$HOME" pull origin main
-        log_success "Dotfiles updated"
+    if [[ "$INSTALL_PACKAGES" -eq 0 ]]; then
+        log_warning "Skipping package installation"
         return
     fi
-    
-    # Clone bare repository
-    log_info "Cloning dotfiles repository..."
-    git clone --bare "$github_repo" "$dotfiles_dir"
-    log_success "Cloned dotfiles repository"
-    
-    # Create alias function (add to shell rc files later)
-    log_info "Creating dotfiles alias..."
-    mkdir -p ~/.local/bin
-    
-    # Checkout files
-    log_info "Checking out dotfiles..."
-    if ! /usr/bin/git --git-dir="$dotfiles_dir" --work-tree="$HOME" checkout -q; then
-        log_warning "Conflicts detected, backing up existing files..."
-        mkdir -p ~/.config-backup
-        /usr/bin/git --git-dir="$dotfiles_dir" --work-tree="$HOME" checkout 2>&1 | \
-            grep "error:" | awk '{print $4}' | \
-            xargs -I {} mv {} ~/.config-backup/ 2>/dev/null || true
-        
-        log_info "Retrying checkout..."
-        /usr/bin/git --git-dir="$dotfiles_dir" --work-tree="$HOME" checkout -q
-    fi
-    log_success "Checked out dotfiles"
-    
-    # Configure git
-    log_info "Configuring git..."
-    /usr/bin/git --git-dir="$dotfiles_dir" --work-tree="$HOME" config status.showUntrackedFiles no
-    log_success "Git configured"
+
+    case "$os" in
+        arch)
+            while IFS= read -r package; do
+                packages+=("$package")
+            done < <(packages_for_arch)
+            install_packages_arch "${packages[@]}"
+            ;;
+        ubuntu)
+            while IFS= read -r package; do
+                packages+=("$package")
+            done < <(packages_for_ubuntu)
+            install_packages_ubuntu "${packages[@]}"
+            ;;
+        macos)
+            while IFS= read -r package; do
+                packages+=("$package")
+            done < <(packages_for_macos)
+            install_packages_macos "${packages[@]}"
+            ;;
+    esac
 }
 
-################################################################################
-# Post-Installation Setup
-################################################################################
+component_paths() {
+    contains_component zsh && printf '%s\n' ".config/zsh" ".zshenv"
+    contains_component nvim && printf '%s\n' ".config/nvim"
+    contains_component doom && printf '%s\n' ".config/doom"
+    contains_component kitty && printf '%s\n' ".config/kitty"
+    contains_component foot && printf '%s\n' ".config/foot"
+    contains_component niri && printf '%s\n' ".config/niri"
+    contains_component mango && printf '%s\n' ".config/mango"
+}
+
+dotfiles_git() {
+    /usr/bin/git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"
+}
+
+ensure_dotfiles_repo() {
+    if [[ -d "$DOTFILES_DIR" ]]; then
+        log_info "Updating dotfiles repo at $DOTFILES_DIR..."
+        dotfiles_git fetch origin "$DOTFILES_BRANCH"
+        return
+    fi
+
+    log_info "Cloning dotfiles repo into $DOTFILES_DIR..."
+    git clone --bare "$DOTFILES_REPO" "$DOTFILES_DIR"
+}
+
+backup_path() {
+    local path="$1"
+    local backup_dir="$HOME/.config-backup/$(date +%Y%m%d-%H%M%S)"
+
+    [[ -e "$HOME/$path" ]] || return
+
+    mkdir -p "$backup_dir/$(dirname "$path")"
+    mv "$HOME/$path" "$backup_dir/$path"
+    log_warning "Backed up $path to $backup_dir/$path"
+}
+
+checkout_path() {
+    local path="$1"
+
+    if ! dotfiles_git checkout "$DOTFILES_BRANCH" -- "$path" 2>/tmp/dotfiles-checkout-error; then
+        backup_path "$path"
+        dotfiles_git checkout "$DOTFILES_BRANCH" -- "$path"
+    fi
+}
+
+setup_dotfiles() {
+    local paths=()
+    local path
+
+    log_info "Setting up selected dotfiles..."
+    ensure_dotfiles_repo
+
+    while IFS= read -r path; do
+        paths+=("$path")
+    done < <(component_paths)
+
+    if [[ "${#paths[@]}" -eq 0 ]]; then
+        log_warning "No dotfile paths selected"
+    else
+        for path in "${paths[@]}"; do
+            if dotfiles_git ls-tree -r --name-only "$DOTFILES_BRANCH" -- "$path" | grep -q .; then
+                checkout_path "$path"
+                log_success "Checked out $path"
+            else
+                log_warning "$path is not tracked in the dotfiles repo; skipping"
+            fi
+        done
+    fi
+
+    dotfiles_git config status.showUntrackedFiles no
+    mkdir -p "$HOME/.config/zsh"
+
+    if ! grep -qs "alias dotfiles=" "$HOME/.config/zsh/aliases.zsh"; then
+        printf "\nalias dotfiles='/usr/bin/git --git-dir=\$HOME/dotfiles --work-tree=\$HOME'\n" >> "$HOME/.config/zsh/aliases.zsh"
+        log_success "Added dotfiles alias"
+    else
+        log_success "dotfiles alias already configured"
+    fi
+}
 
 setup_shell() {
-    log_info "Setting up shell..."
-    
-    local current_shell=$(echo $SHELL)
-    local zsh_path=$(which zsh)
-    
-    if [ "$current_shell" != "$zsh_path" ]; then
-        log_info "Changing default shell to zsh..."
-        chsh -s "$zsh_path"
-        log_success "Shell changed to zsh"
-    else
-        log_success "zsh is already the default shell"
+    local zsh_path
+
+    contains_component zsh || return
+
+    log_info "Setting up zsh..."
+    if ! command -v zsh >/dev/null 2>&1; then
+        log_warning "zsh is not installed"
+        return
+    fi
+
+    zsh_path="$(command -v zsh)"
+    if [[ "${SHELL:-}" != "$zsh_path" ]]; then
+        chsh -s "$zsh_path" || log_warning "Could not change default shell"
     fi
 }
 
 setup_neovim() {
+    contains_component nvim || return
+
     log_info "Setting up Neovim..."
-    
-    # Verify nvim is installed
-    if ! command -v nvim &> /dev/null; then
-        log_error "Neovim not installed"
-        return 1
+    mkdir -p "$HOME/.cache/nvim"
+
+    if command -v nvim >/dev/null 2>&1; then
+        log_success "Neovim is available"
+    else
+        log_warning "Neovim is not installed"
     fi
-    
-    log_success "Neovim is installed"
-    log_info "Note: LSP servers and Treesitter parsers will auto-install"
-    log_info "       when you first open a file. This is normal!"
-    
-    # Create cache directory
-    mkdir -p ~/.cache/zsh
-    mkdir -p ~/.cache/nvim
-    
-    log_success "Neovim cache directories created"
+}
+
+setup_doom() {
+    contains_component doom || return
+
+    log_info "Setting up Doom Emacs..."
+    mkdir -p "$HOME/.config/doom"
+
+    if [[ ! -x "$HOME/.config/emacs/bin/doom" ]]; then
+        if [[ -e "$HOME/.config/emacs" ]]; then
+            log_warning "~/.config/emacs exists but Doom was not found there"
+            return
+        fi
+
+        log_info "Cloning Doom Emacs..."
+        git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs" || {
+            log_warning "Could not clone Doom Emacs"
+            return
+        }
+    fi
+
+    log_info "Running doom sync..."
+    "$HOME/.config/emacs/bin/doom" sync || log_warning "doom sync failed"
 }
 
 setup_rustup() {
-    log_info "Setting up Rust..."
-    
-    if command -v rustup &> /dev/null; then
-        log_success "Rustup already installed"
-        log_info "Updating Rust..."
-        rustup update > /dev/null 2>&1
-        log_success "Rust updated"
-    else
-        log_warning "Rustup not found, skipping Rust setup"
+    contains_component dev || return
+
+    if command -v rustup >/dev/null 2>&1; then
+        log_info "Updating Rust toolchain..."
+        rustup update || log_warning "rustup update failed"
     fi
 }
 
 setup_node_packages() {
-    log_info "Setting up Node.js global packages..."
-    
-    if ! command -v npm &> /dev/null; then
-        log_warning "npm not found, skipping Node.js setup"
+    contains_component dev || contains_component nvim || return
+
+    if ! command -v npm >/dev/null 2>&1; then
+        log_warning "npm not found, skipping global Node packages"
         return
     fi
-    
-    local npm_packages=(
-        "npm"
-        "yarn"
-    )
-    
-    for pkg in "${npm_packages[@]}"; do
-        if npm list -g "$pkg" > /dev/null 2>&1; then
-            log_success "$pkg already installed"
-        else
-            log_info "Installing $pkg..."
-            npm install -g "$pkg" > /dev/null 2>&1 && \
-                log_success "Installed $pkg" || \
-                log_warning "Failed to install $pkg"
-        fi
-    done
+
+    if ! npm list -g yarn >/dev/null 2>&1; then
+        log_info "Installing yarn..."
+        npm install -g yarn || log_warning "Failed to install yarn"
+    fi
 }
 
-################################################################################
-# Final Setup
-################################################################################
+verify_selection() {
+    local errors=0
+    local tool
+
+    contains_component zsh && for tool in zsh git; do
+        command -v "$tool" >/dev/null 2>&1 && log_success "$tool is installed" || { log_warning "$tool is not installed"; ((errors++)); }
+    done
+
+    contains_component nvim && {
+        command -v nvim >/dev/null 2>&1 && log_success "nvim is installed" || { log_warning "nvim is not installed"; ((errors++)); }
+    }
+
+    contains_component doom && {
+        command -v emacs >/dev/null 2>&1 && log_success "emacs is installed" || { log_warning "emacs is not installed"; ((errors++)); }
+    }
+
+    contains_component kitty && {
+        command -v kitty >/dev/null 2>&1 && log_success "kitty is installed" || log_warning "kitty is not installed"
+    }
+
+    contains_component foot && {
+        command -v foot >/dev/null 2>&1 && log_success "foot is installed" || log_warning "foot is not installed"
+    }
+
+    return "$errors"
+}
 
 print_summary() {
     echo ""
-    echo -e "${BLUE}════════════════════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}✓ Installation Complete!${NC}"
-    echo -e "${BLUE}════════════════════════════════════════════════════════════${NC}"
+    echo -e "${BLUE}============================================================${NC}"
+    echo -e "${GREEN}Installation complete${NC}"
+    echo -e "${BLUE}============================================================${NC}"
     echo ""
-    echo "Next steps:"
+    echo "Selected components: ${SELECTED_COMPONENTS[*]}"
     echo ""
-    echo "1. ${YELLOW}Restart your terminal${NC} or run:"
-    echo "   ${BLUE}exec zsh${NC}"
-    echo ""
-    echo "2. ${YELLOW}Create the dotfiles alias${NC}:"
-    echo "   The alias is in your ~/.config/zsh/aliases.zsh"
-    echo "   You can use it after restarting: ${BLUE}dotfiles status${NC}"
-    echo ""
-    echo "3. ${YELLOW}First Neovim use${NC}:"
-    echo "   Open any file: ${BLUE}nvim somefile.py${NC}"
-    echo "   LSP and Treesitter will auto-install. Be patient on first run!"
-    echo ""
-    echo "4. ${YELLOW}Verify everything${NC}:"
-    echo "   ${BLUE}nvim --version${NC}"
-    echo "   ${BLUE}zsh --version${NC}"
-    echo ""
-    echo "Included configs:"
-    echo "  • Zsh with performance optimizations"
-    echo "  • Neovim with auto-install LSP/Treesitter"
-    echo "  • Foot terminal emulator"
-    echo "  • Alacritty terminal emulator"
-    echo ""
-    echo "Documentation:"
-    echo "  See ~/README.md for detailed setup instructions"
+    echo "Useful commands:"
+    echo "  exec zsh"
+    echo "  dotfiles status"
+    echo "  bash install.sh --components doom,kitty,foot"
     echo ""
 }
-
-print_error_summary() {
-    echo ""
-    echo -e "${YELLOW}════════════════════════════════════════════════════════════${NC}"
-    echo -e "${YELLOW}⚠ Installation completed with some issues${NC}"
-    echo -e "${YELLOW}════════════════════════════════════════════════════════════${NC}"
-    echo ""
-    echo "Please check the messages above for details."
-    echo "Some packages may need manual installation."
-    echo ""
-    echo "For more information, see: ~/README.md"
-    echo ""
-}
-
-################################################################################
-# Main Installation Flow
-################################################################################
 
 main() {
-    clear
-    echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║          Dotfiles Installation & Setup Script             ║${NC}"
-    echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
+    local os
+
+    parse_args "$@"
+
+    echo -e "${BLUE}Dotfiles Installation & Setup${NC}"
     echo ""
-    
-    # Detect OS
-    log_info "Detecting operating system..."
-    OS=$(detect_os)
-    
-    case "$OS" in
-        arch)
-            log_success "Detected Arch Linux"
-            ;;
-        ubuntu)
-            log_success "Detected Ubuntu/Debian"
-            ;;
-        macos)
-            log_success "Detected macOS"
+
+    if [[ "${#SELECTED_COMPONENTS[@]}" -eq 0 ]]; then
+        if [[ "$INTERACTIVE" -eq 1 && -t 0 ]]; then
+            prompt_for_components
+        else
+            select_all_components
+        fi
+    fi
+
+    log_info "Selected components: ${SELECTED_COMPONENTS[*]}"
+
+    os="$(detect_os)"
+    case "$os" in
+        arch|ubuntu|macos)
+            log_success "Detected $os"
             ;;
         *)
             log_error "Unsupported OS or could not detect"
             exit 1
             ;;
     esac
-    
-    echo ""
-    
-    # Step 1: Install packages
-    log_info "Step 1/4: Installing system packages..."
-    echo ""
-    case "$OS" in
-        arch)
-            install_packages_arch
-            ;;
-        ubuntu)
-            install_packages_ubuntu
-            ;;
-        macos)
-            install_packages_macos
-            ;;
-    esac
-    log_success "Step 1 completed"
-    echo ""
-    
-    # Step 2: Setup dotfiles
-    log_info "Step 2/4: Setting up dotfiles repository..."
-    echo ""
+
+    install_selected_packages "$os"
     setup_dotfiles
-    log_success "Step 2 completed"
-    echo ""
-    
-    # Step 3: Post-installation configuration
-    log_info "Step 3/4: Configuring applications..."
-    echo ""
     setup_shell
     setup_neovim
+    setup_doom
     setup_rustup
     setup_node_packages
-    log_success "Step 3 completed"
-    echo ""
-    
-    # Step 4: Verification
-    log_info "Step 4/4: Verifying installation..."
-    echo ""
-    
-    local errors=0
-    
-    # Check installed tools
-    for tool in git zsh nvim fzf ripgrep; do
-        if command -v "$tool" &> /dev/null; then
-            log_success "$tool is installed"
-        else
-            log_warning "$tool is not installed"
-            ((errors++))
-        fi
-    done
-    
-    log_success "Step 4 completed"
-    echo ""
-    
-    # Print summary
-    if [ $errors -eq 0 ]; then
+
+    if verify_selection; then
         print_summary
     else
-        print_error_summary
+        log_warning "Finished with warnings"
+        print_summary
     fi
 }
 
-# Run main function
 main "$@"
