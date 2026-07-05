@@ -96,7 +96,8 @@ fi
     source /usr/share/doc/fzf/examples/key-bindings.zsh
     source /usr/share/doc/fzf/examples/completion.zsh
 }
-
+# Doom Emacs
+export PATH="$HOME/.config/emacs/bin:$PATH"
 # =========================================================
 # Modular configuration
 # =========================================================
