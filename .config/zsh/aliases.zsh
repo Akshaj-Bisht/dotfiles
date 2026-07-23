@@ -18,7 +18,6 @@ compdef eza=ls
 # Core utilities
 # =========================================================
 
-alias grep='rg --color=auto'
 alias diff='diff --color=auto'
 alias df='df -h'
 
@@ -47,3 +46,5 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME'
 #sudo
 export SUDO_EDITOR="nvim"
 alias "sudoedit"='function _sudoedit(){sudo -e "$1";};_sudoedit'
+#emacs
+alias emacs='emacsclient -c -n -a ""'

@@ -166,3 +166,6 @@ vim.api.nvim_create_autocmd('VimEnter', {
 })
 
 
+
+local ok, matugen = pcall(require, 'matugen')
+if ok then matugen.setup() end

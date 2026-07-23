@@ -54,3 +54,6 @@
 ;; (unpin! t)
 (package! sideline)
 (package! sideline-flymake)
+(package! org-modern)
+(package! mixed-pitch)
+(package! visual-fill-column)

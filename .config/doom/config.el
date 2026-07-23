@@ -34,7 +34,7 @@
        :size 24
        :weight 'medium))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; UI
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -99,7 +99,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Convenience Keybindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (map! :leader
       :desc "Open Terminal" "o t" #'vterm
 
@@ -137,9 +136,30 @@
 
 ;; better undo
 (setq evil-want-fine-undo t)
-;; inline error
-(use-package! sideline
-  :hook (flymake-mode . sideline-mode)
-  :config
-  (setq sideline-backends-right '(sideline-flymake)
-        sideline-flymake-display-mode 'point))
+
+(after! flycheck (setq flycheck-idle-change-delay 0.1))
+(after! lsp-mode
+  (setq lsp-idle-delay 0.1)
+  :custom
+  (setq lsp-completion-enable-additional-text-edit t)
+  (setq lsp-modeline-code-actions-enable t)
+  )
+
+(use-package! org-modern
+  :after org
+  :hook (org-mode . org-modern-mode))
+
+(use-package! mixed-pitch
+  :hook (org-mode . mixed-pitch-mode))
+
+(after! visual-fill-column
+  (setq visual-fill-column-width 80
+        visual-fill-column-center-text t))
+
+(add-hook 'org-mode-hook #'visual-fill-column-mode)
+
+(map! :after org
+      :map org-mode-map
+      :leader
+      :desc "Toggle Org Modern"
+      "t m" #'org-modern-mode)
